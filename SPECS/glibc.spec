@@ -1,6 +1,6 @@
 %define glibcsrcdir glibc-2.28
 %define glibcversion 2.28
-%define glibcrelease 42%{?dist}.1
+%define glibcrelease 42%{?dist}.1.0+custom1+1
 # Pre-release tarballs are pulled in from git using a command that is
 # effectively:
 #
@@ -207,6 +207,7 @@ Patch71: glibc-rh1642094-3.patch
 Patch72: glibc-rh1654872-1.patch
 Patch73: glibc-rh1654872-2.patch
 Patch74: glibc-rh1692450.patch
+Patch75: glibc-port-2-6-32-kernel-compat.patch
 
 ##############################################################################
 # Continued list of core "glibc" package information:
@@ -267,7 +268,7 @@ BuildRequires: python3 python3-devel
 # This is the first GCC version with enhanced valgrind support in the
 # inline expansion of string functions (#1532205, #1652929, #1652932).
 BuildRequires: gcc >= 8.2.1-3.4
-%define enablekernel 3.2
+%define enablekernel 2.6.32
 Conflicts: kernel < %{enablekernel}
 %define target %{_target_cpu}-redhat-linux
 %ifarch %{arm}
@@ -1952,6 +1953,9 @@ fi
 %files -f compat-libpthread-nonshared.filelist -n compat-libpthread-nonshared
 
 %changelog
+* Tue Dec  10 2019 DevOps <root@localhost> - 2.28-9942.1.0+custom1+1
+- port v2.6.32 linux kernel compatibility from glibc 2.24 or 2.25
+
 * Mon Apr  1 2019 Florian Weimer <fweimer@redhat.com> - 2.28-42.1
 - ja_JP: Add new Japanese Era name (#1692450)
 
