@@ -1955,6 +1955,7 @@ fi
 %changelog
 * Tue Dec  10 2019 DevOps <root@localhost> - 2.28-9942.1.0+custom1+1
 - port v2.6.32 linux kernel compatibility from glibc 2.24 or 2.25
+- https://github.com/sdwru/glibc-centos-8/releases
 
 * Mon Apr  1 2019 Florian Weimer <fweimer@redhat.com> - 2.28-42.1
 - ja_JP: Add new Japanese Era name (#1692450)
