@@ -29,3 +29,54 @@ $(inst_gconvdir)/%.so: $(objpfx)%.so $(+force)
 
 sysdeps-gconv-modules = ../sysdeps/s390/gconv-modules
 endif
+
+ifeq ($(subdir),string)
+sysdep_routines += bzero memset memset-z900 \
+		   memcmp memcmp-z900 \
+		   mempcpy memcpy memcpy-z900 \
+		   memmove memmove-c \
+		   strstr strstr-arch13 strstr-vx strstr-c \
+		   memmem memmem-arch13 memmem-vx memmem-c \
+		   strlen strlen-vx strlen-c \
+		   strnlen strnlen-vx strnlen-c \
+		   strcpy strcpy-vx strcpy-z900 \
+		   stpcpy stpcpy-vx stpcpy-c \
+		   strncpy strncpy-vx strncpy-z900 \
+		   stpncpy stpncpy-vx stpncpy-c \
+		   strcat strcat-vx strcat-c \
+		   strncat strncat-vx strncat-c \
+		   strcmp strcmp-vx strcmp-z900 \
+		   strncmp strncmp-vx strncmp-c \
+		   strchr strchr-vx strchr-c \
+		   strchrnul strchrnul-vx strchrnul-c \
+		   strrchr strrchr-vx strrchr-c \
+		   strspn strspn-vx strspn-c \
+		   strpbrk strpbrk-vx strpbrk-c \
+		   strcspn strcspn-vx strcspn-c \
+		   memchr memchr-vx memchr-z900 \
+		   rawmemchr rawmemchr-vx rawmemchr-c \
+		   memccpy memccpy-vx memccpy-c \
+		   memrchr memrchr-vx memrchr-c
+endif
+
+ifeq ($(subdir),wcsmbs)
+sysdep_routines += wcslen wcslen-vx wcslen-c \
+		   wcsnlen wcsnlen-vx wcsnlen-c \
+		   wcscpy wcscpy-vx wcscpy-c \
+		   wcpcpy wcpcpy-vx wcpcpy-c \
+		   wcsncpy wcsncpy-vx wcsncpy-c \
+		   wcpncpy wcpncpy-vx wcpncpy-c \
+		   wcscat wcscat-vx wcscat-c \
+		   wcsncat wcsncat-vx wcsncat-c \
+		   wcscmp wcscmp-vx wcscmp-c \
+		   wcsncmp wcsncmp-vx wcsncmp-c \
+		   wcschr wcschr-vx wcschr-c \
+		   wcschrnul wcschrnul-vx wcschrnul-c \
+		   wcsrchr wcsrchr-vx wcsrchr-c \
+		   wcsspn wcsspn-vx wcsspn-c \
+		   wcspbrk wcspbrk-vx wcspbrk-c \
+		   wcscspn wcscspn-vx wcscspn-c \
+		   wmemchr wmemchr-vx wmemchr-c \
+		   wmemset wmemset-vx wmemset-c \
+		   wmemcmp wmemcmp-vx wmemcmp-c
+endif

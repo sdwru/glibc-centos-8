@@ -60,6 +60,10 @@ lib-modules		:= charmap-dir simple-hash xmalloc xstrdup \
 GPERF = gperf
 GPERFFLAGS = -acCgopt -k1,2,5,9,$$ -L ANSI-C
 
+ifeq ($(run-built-tests),yes)
+tests-special += $(objpfx)tst-locale-locpath.out
+endif
+
 include ../Rules
 
 CFLAGS-md5.c += -I../crypt
@@ -104,3 +108,7 @@ cpp-srcs-left := $(localedef-modules) $(localedef-aux) $(locale-modules) \
 		 $(lib-modules)
 lib := locale-programs
 include $(patsubst %,$(..)libof-iterator.mk,$(cpp-srcs-left))
+
+$(objpfx)tst-locale-locpath.out : tst-locale-locpath.sh $(objpfx)locale
+	$(SHELL) $< '$(common-objpfx)' '$(test-wrapper)' '$(test-wrapper-env)' > $@; \
+	$(evaluate-test)

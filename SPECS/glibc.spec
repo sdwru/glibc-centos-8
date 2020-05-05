@@ -1,6 +1,6 @@
 %define glibcsrcdir glibc-2.28
 %define glibcversion 2.28
-%define glibcrelease 42%{?dist}.1.0+custom1+1
+%define glibcrelease 9972%{?dist}.1.0+custom1+1
 # Pre-release tarballs are pulled in from git using a command that is
 # effectively:
 #
@@ -138,7 +138,6 @@ Source12: ChangeLog.old
 # - See each individual patch file for origin and upstream status.
 # - For new patches follow template.patch format.
 ##############################################################################
-Patch1: glibc-post_upgrade.patch
 Patch2: glibc-fedora-nscd.patch
 Patch3: glibc-rh697421.patch
 Patch4: glibc-fedora-linux-tcsetattr.patch
@@ -206,8 +205,118 @@ Patch70: glibc-rh1642094-2.patch
 Patch71: glibc-rh1642094-3.patch
 Patch72: glibc-rh1654872-1.patch
 Patch73: glibc-rh1654872-2.patch
-Patch74: glibc-rh1692450.patch
-Patch75: glibc-port-2-6-32-kernel-compat.patch
+Patch74: glibc-rh1651283-1.patch
+Patch75: glibc-rh1662843-1.patch
+Patch76: glibc-rh1662843-2.patch
+Patch77: glibc-rh1623537.patch
+Patch78: glibc-rh1577438.patch
+Patch79: glibc-rh1664408.patch
+Patch80: glibc-rh1651742.patch
+Patch81: glibc-rh1672773.patch
+Patch82: glibc-rh1651283-2.patch
+Patch83: glibc-rh1651283-3.patch
+Patch84: glibc-rh1651283-4.patch
+Patch85: glibc-rh1651283-5.patch
+Patch86: glibc-rh1651283-6.patch
+Patch87: glibc-rh1651283-7.patch
+Patch88: glibc-rh1659293-1.patch
+Patch89: glibc-rh1659293-2.patch
+Patch90: glibc-rh1639343-1.patch
+Patch91: glibc-rh1639343-2.patch
+Patch92: glibc-rh1639343-3.patch
+Patch93: glibc-rh1639343-4.patch
+Patch94: glibc-rh1639343-5.patch
+Patch95: glibc-rh1639343-6.patch
+Patch96: glibc-rh1663035.patch
+Patch97: glibc-rh1658901.patch
+Patch98: glibc-rh1659512-1.patch
+Patch99: glibc-rh1659512-2.patch
+Patch100: glibc-rh1659438-1.patch
+Patch101: glibc-rh1659438-2.patch
+Patch102: glibc-rh1659438-3.patch
+Patch103: glibc-rh1659438-4.patch
+Patch104: glibc-rh1659438-5.patch
+Patch105: glibc-rh1659438-6.patch
+Patch106: glibc-rh1659438-7.patch
+Patch107: glibc-rh1659438-8.patch
+Patch108: glibc-rh1659438-9.patch
+Patch109: glibc-rh1659438-10.patch
+Patch110: glibc-rh1659438-11.patch
+Patch111: glibc-rh1659438-12.patch
+Patch112: glibc-rh1659438-13.patch
+Patch113: glibc-rh1659438-14.patch
+Patch114: glibc-rh1659438-15.patch
+Patch115: glibc-rh1659438-16.patch
+Patch116: glibc-rh1659438-17.patch
+Patch117: glibc-rh1659438-18.patch
+Patch118: glibc-rh1659438-19.patch
+Patch119: glibc-rh1659438-20.patch
+Patch120: glibc-rh1659438-21.patch
+Patch121: glibc-rh1659438-22.patch
+Patch122: glibc-rh1659438-23.patch
+Patch123: glibc-rh1659438-24.patch
+Patch124: glibc-rh1659438-25.patch
+Patch125: glibc-rh1659438-26.patch
+Patch126: glibc-rh1659438-27.patch
+Patch127: glibc-rh1659438-28.patch
+Patch128: glibc-rh1659438-29.patch
+Patch129: glibc-rh1659438-30.patch
+Patch130: glibc-rh1659438-31.patch
+Patch131: glibc-rh1659438-32.patch
+Patch132: glibc-rh1659438-33.patch
+Patch133: glibc-rh1659438-34.patch
+Patch134: glibc-rh1659438-35.patch
+Patch135: glibc-rh1659438-36.patch
+Patch136: glibc-rh1659438-37.patch
+Patch137: glibc-rh1659438-38.patch
+Patch138: glibc-rh1659438-39.patch
+Patch139: glibc-rh1659438-40.patch
+Patch140: glibc-rh1659438-41.patch
+Patch141: glibc-rh1659438-42.patch
+Patch142: glibc-rh1659438-43.patch
+Patch143: glibc-rh1659438-44.patch
+Patch144: glibc-rh1659438-45.patch
+Patch145: glibc-rh1659438-46.patch
+Patch146: glibc-rh1659438-47.patch
+Patch147: glibc-rh1659438-48.patch
+Patch148: glibc-rh1659438-49.patch
+Patch149: glibc-rh1659438-50.patch
+Patch150: glibc-rh1659438-51.patch
+Patch151: glibc-rh1659438-52.patch
+Patch152: glibc-rh1659438-53.patch
+Patch153: glibc-rh1659438-54.patch
+Patch154: glibc-rh1659438-55.patch
+Patch155: glibc-rh1659438-56.patch
+Patch156: glibc-rh1659438-57.patch
+Patch157: glibc-rh1659438-58.patch
+Patch158: glibc-rh1659438-59.patch
+Patch159: glibc-rh1659438-60.patch
+Patch160: glibc-rh1659438-61.patch
+Patch161: glibc-rh1659438-62.patch
+Patch162: glibc-rh1702539-1.patch
+Patch163: glibc-rh1702539-2.patch
+Patch164: glibc-rh1701605-1.patch
+Patch165: glibc-rh1701605-2.patch
+Patch166: glibc-rh1691528-1.patch
+Patch167: glibc-rh1691528-2.patch
+Patch168: glibc-rh1706777.patch
+Patch169: glibc-rh1710478.patch
+Patch170: glibc-rh1670043-1.patch
+Patch171: glibc-rh1670043-2.patch
+Patch172: glibc-rh1710894.patch
+Patch173: glibc-rh1699194-1.patch
+Patch174: glibc-rh1699194-2.patch
+Patch175: glibc-rh1699194-3.patch
+Patch176: glibc-rh1699194-4.patch
+Patch177: glibc-rh1727241-1.patch
+Patch178: glibc-rh1727241-2.patch
+Patch179: glibc-rh1727241-3.patch
+Patch180: glibc-rh1717438.patch
+Patch181: glibc-rh1727152.patch
+Patch182: glibc-rh1724975.patch
+Patch183: glibc-rh1722215.patch
+Patch184: glibc-rh1777797.patch
+Patch185: glibc-port-2-6-32-kernel-compat.patch
 
 ##############################################################################
 # Continued list of core "glibc" package information:
@@ -288,8 +397,8 @@ BuildRequires: make >= 4.0
 # The intl subsystem generates a parser using bison.
 BuildRequires: bison >= 2.7
 
-# binutils 2.30-17 is needed for --generate-missing-build-notes.
-BuildRequires: binutils >= 2.30-17
+# binutils 2.30-51 is needed for z13 support on s390x.
+BuildRequires: binutils >= 2.30-51
 
 # Earlier releases have broken support for IRELATIVE relocations
 Conflicts: prelink < 0.4.2
@@ -446,8 +555,11 @@ libraries, as well as national language (locale) support.
 /sbin/ldconfig
 %end
 
-# We need to run ldconfig manually because ldconfig cannot handle the
-# relative include path in the /etc/ld.so.conf file we gneerate.
+# We need to run ldconfig manually because __brp_ldconfig assumes that
+# glibc itself is always installed in $RPM_BUILD_ROOT, but with sysroots
+# we may be installed into a subdirectory of that path.  Therefore we
+# unset __brp_ldconfig and run ldconfig by hand with the sysroots path
+# passed to -r.
 %undefine __brp_ldconfig
 
 ######################################################################
@@ -1087,8 +1199,19 @@ $olddir/build-%{target}/elf/ld.so \
         $olddir/build-%{target}/locale/localedef \
         --prefix %{glibc_sysroot} --add-to-archive \
         eo *_*
-# Setup the locale-archive template for use by glibc-all-langpacks.
-mv locale-archive{,.tmpl}
+# Setup the locale-archive template for use by glibc-all-langpacks.  We
+# copy the archive in place to keep the size of the file. Even though we
+# mark the file with "ghost" the size is used by rpm to compute the
+# required free space (see rhbz#1725131). We do this because there is a
+# point in the install when build-locale-archive has copied 100% of the
+# template into the new locale archive and so this consumes twice the
+# amount of diskspace. Note that this doesn't account for copying
+# existing compiled locales into the archive, this may consume even more
+# disk space and we can't fix that issue. In upstream we have moved away
+# from this process, removing build-locale-archive and installing a
+# default locale-archive without modification, and leaving compiled
+# locales as they are (without inclusion into the archive).
+cp locale-archive{,.tmpl}
 # Create the file lists for the language specific sub-packages:
 for i in eo *_*
 do
@@ -1142,10 +1265,6 @@ truncate -s 0 %{glibc_sysroot}/etc/gai.conf
 truncate -s 0 %{glibc_sysroot}%{_libdir}/gconv/gconv-modules.cache
 chmod 644 %{glibc_sysroot}%{_libdir}/gconv/gconv-modules.cache
 
-# Install the upgrade program
-install -m 700 build-%{target}/elf/glibc_post_upgrade \
-  %{glibc_sysroot}%{_prefix}/sbin/glibc_post_upgrade.%{_target_cpu}
-
 ##############################################################################
 # Install debug copies of unstripped static libraries
 # - This step must be last in order to capture any additional static
@@ -1168,8 +1287,8 @@ rm -rf %{glibc_sysroot}%{_prefix}/share/zoneinfo
 #
 # XXX: Ideally ld.so.conf should have the timestamp of the spec file, but there
 # doesn't seem to be any macro to give us that.  So we do the next best thing,
-# which is to at least keep the timestamp consistent.  The choice of using
-# glibc_post_upgrade.c is arbitrary.
+# which is to at least keep the timestamp consistent. The choice of using
+# SOURCE0 is arbitrary.
 touch -r %{SOURCE0} %{glibc_sysroot}/etc/ld.so.conf
 touch -r sunrpc/etc.rpc %{glibc_sysroot}/etc/rpc
 
@@ -1232,7 +1351,6 @@ rm -f %{glibc_sysroot}%{_infodir}/dir
 %endif
 
 %ifnarch %{auxarches}
-truncate -s 0 %{glibc_sysroot}/%{_prefix}/lib/locale/locale-archive
 mkdir -p %{glibc_sysroot}/var/{db,run}/nscd
 touch %{glibc_sysroot}/var/{db,run}/nscd/{passwd,group,hosts,services}
 touch %{glibc_sysroot}/var/run/nscd/{socket,nscd.pid}
@@ -1405,8 +1523,9 @@ chmod 0444 master.filelist
 # - The partial (lib*_p.a) static libraries, include files.
 # - The static files, objects, unversioned DSOs, and nscd.
 # - The bin, locale, some sbin, and share.
-#   - The use of [^gi] is meant to exclude all files except glibc_post_upgrade,
-#     and iconvconfig, which we want in the main packages.
+#   - We want iconvconfig in the main package and we do this by using
+#     a double negation of -v and [^i] so it removes all files in
+#     sbin *but* iconvconfig.
 # - All the libnss files (we add back the ones we want later).
 # - All bench test binaries.
 # - The aux-cache, since it's handled specially in the files section.
@@ -1422,7 +1541,7 @@ cat master.filelist \
 	-e 'nscd' \
 	-e '%{_prefix}/bin' \
 	-e '%{_prefix}/lib/locale' \
-	-e '%{_prefix}/sbin/[^gi]' \
+	-e '%{_prefix}/sbin/[^i]' \
 	-e '%{_prefix}/share' \
 	-e '/var/db/Makefile' \
 	-e '/libnss_.*\.so[0-9.]*$' \
@@ -1499,10 +1618,13 @@ grep '%{_libdir}/lib.*\.a' < master.filelist \
 ###############################################################################
 
 # All of the bin and certain sbin files go into the common package except
-# glibc_post_upgrade.* and iconvconfig which need to go in glibc. Likewise
-# nscd is excluded because it goes in nscd.
+# iconvconfig which needs to go in glibc. Likewise nscd is excluded because
+# it goes in nscd. The iconvconfig binary is kept in the main glibc package
+# because we use it in the post-install scriptlet to rebuild the
+# gconv-modules.cache.
 grep '%{_prefix}/bin' master.filelist >> common.filelist
-grep '%{_prefix}/sbin/[^gi]' master.filelist \
+grep '%{_prefix}/sbin' master.filelist \
+	| grep -v '%{_prefix}/sbin/iconvconfig' \
 	| grep -v 'nscd' >> common.filelist
 # All of the files under share go into the common package since they should be
 # multilib-independent.
@@ -1596,7 +1718,7 @@ echo "%{_libdir}/libpthread_nonshared.a" >> compat-libpthread-nonshared.filelist
 # glibc-debuginfocommon, and glibc-debuginfo
 ###############################################################################
 
-find_debuginfo_args='--strict-build-id -g'
+find_debuginfo_args='--strict-build-id -g -i'
 %ifarch %{debuginfocommonarches}
 find_debuginfo_args="$find_debuginfo_args \
 	-l common.filelist \
@@ -1800,7 +1922,135 @@ if rpm.vercmp(rel, required) < 0 then
   error("FATAL: kernel too old", 0)
 end
 
-%post -p %{_prefix}/sbin/glibc_post_upgrade.%{_target_cpu}
+%post -p <lua>
+-- We use lua's posix.exec because there may be no shell that we can
+-- run during glibc upgrade.
+function post_exec (program, ...)
+  local pid = posix.fork ()
+  if pid == 0 then
+    assert (posix.exec (program, ...))
+  elseif pid > 0 then
+    posix.wait (pid)
+  end
+end
+
+-- (1) Remove multilib libraries from previous installs.
+-- In order to support in-place upgrades, we must immediately remove
+-- obsolete platform directories after installing a new glibc
+-- version.  RPM only deletes files removed by updates near the end
+-- of the transaction.  If we did not remove the obsolete platform
+-- directories here, they may be preferred by the dynamic linker
+-- during the execution of subsequent RPM scriptlets, likely
+-- resulting in process startup failures.
+
+-- Full set of libraries glibc may install.
+install_libs = { "anl", "BrokenLocale", "c", "dl", "m", "mvec",
+		 "nss_compat", "nss_db", "nss_dns", "nss_files",
+		 "nss_hesiod", "pthread", "resolv", "rt", "SegFault",
+		 "thread_db", "util" }
+
+-- We are going to remove these libraries. Generally speaking we remove
+-- all core libraries in the multilib directory.
+-- We employ a tight match where X.Y is in [2.0,9.9*], so we would
+-- match "libc-2.0.so" and so on up to "libc-9.9*".
+remove_regexps = {}
+for i = 1, #install_libs do
+  remove_regexps[i] = ("lib" .. install_libs[i]
+                       .. "%%-[2-9]%%.[0-9]+%%.so$")
+end
+
+-- Two exceptions:
+remove_regexps[#install_libs + 1] = "libthread_db%%-1%%.0%%.so"
+remove_regexps[#install_libs + 2] = "libSegFault%%.so"
+
+-- We are going to search these directories.
+local remove_dirs = { "%{_libdir}/i686",
+		      "%{_libdir}/i686/nosegneg",
+		      "%{_libdir}/power6",
+		      "%{_libdir}/power7",
+		      "%{_libdir}/power8" }
+
+-- Walk all the directories with files we need to remove...
+for _, rdir in ipairs (remove_dirs) do
+  if posix.access (rdir) then
+    -- If the directory exists we look at all the files...
+    local remove_files = posix.files (rdir)
+    for rfile in remove_files do
+      for _, rregexp in ipairs (remove_regexps) do
+	-- Does it match the regexp?
+	local dso = string.match (rfile, rregexp)
+        if (dso ~= nil) then
+	  -- Removing file...
+	  os.remove (rdir .. '/' .. rfile)
+	end
+      end
+    end
+  end
+end
+
+-- (2) Update /etc/ld.so.conf
+-- Next we update /etc/ld.so.conf to ensure that it starts with
+-- a literal "include ld.so.conf.d/*.conf".
+
+local ldsoconf = "/etc/ld.so.conf"
+local ldsoconf_tmp = "/etc/glibc_post_upgrade.ld.so.conf"
+
+if posix.access (ldsoconf) then
+
+  -- We must have a "include ld.so.conf.d/*.conf" line.
+  local have_include = false
+  for line in io.lines (ldsoconf) do
+    -- This must match, and we don't ignore whitespace.
+    if string.match (line, "^include ld.so.conf.d/%%*%%.conf$") ~= nil then
+      have_include = true
+    end
+  end
+
+  if not have_include then
+    -- Insert "include ld.so.conf.d/*.conf" line at the start of the
+    -- file. We only support one of these post upgrades running at
+    -- a time (temporary file name is fixed).
+    local tmp_fd = io.open (ldsoconf_tmp, "w")
+    if tmp_fd ~= nil then
+      tmp_fd:write ("include ld.so.conf.d/*.conf\n")
+      for line in io.lines (ldsoconf) do
+        tmp_fd:write (line .. "\n")
+      end
+      tmp_fd:close ()
+      local res = os.rename (ldsoconf_tmp, ldsoconf)
+      if res == nil then
+        io.stdout:write ("Error: Unable to update configuration file (rename).\n")
+      end
+    else
+      io.stdout:write ("Error: Unable to update configuration file (open).\n")
+    end
+  end
+end
+
+-- (3) Rebuild ld.so.cache early.
+-- If the format of the cache changes then we need to rebuild
+-- the cache early to avoid any problems running binaries with
+-- the new glibc.
+
+-- Note: We use _prefix because Fedora's UsrMove says so.
+post_exec ("%{_prefix}/sbin/ldconfig")
+
+-- (4) Update gconv modules cache.
+-- If the /usr/lib/gconv/gconv-modules.cache exists, then update it
+-- with the latest set of modules that were just installed.
+-- We assume that the cache is in _libdir/gconv and called
+-- "gconv-modules.cache".
+
+local iconv_dir = "%{_libdir}/gconv"
+local iconv_cache = iconv_dir .. "/gconv-modules.cache"
+if (posix.utime (iconv_cache) == 0) then
+  post_exec ("%{_prefix}/sbin/iconvconfig",
+	     "-o", iconv_cache,
+	     "--nostdlib",
+	     iconv_dir)
+else
+  io.stdout:write ("Error: Missing " .. iconv_cache .. " file.\n")
+end
 
 %posttrans all-langpacks -e -p <lua>
 -- If at the end of the transaction we are still installed
@@ -1817,11 +2067,11 @@ if posix.stat("%{_prefix}/lib/locale/locale-archive.tmpl", "size") > 0 then
 end
 
 %postun all-langpacks -p <lua>
--- In the postun we always remove the locale cache.
--- We are being uninstalled and if this is an upgrade
--- then the new packages template will be used to
--- recreate a new copy of the cache.
-os.remove("%{_prefix}/lib/locale/locale-archive")
+-- In the postun we remove the locale cache if unstalling.
+-- (build-locale-archive will delete the archive during an upgrade.)
+if arg[2] == 0 then
+  os.remove("%{_prefix}/lib/locale/locale-archive")
+end
 
 %if %{with docs}
 %post devel
@@ -1892,7 +2142,7 @@ fi
 
 %files all-langpacks
 %attr(0644,root,root) %verify(not md5 size mtime) %{_prefix}/lib/locale/locale-archive.tmpl
-%attr(0644,root,root) %verify(not md5 size mtime mode) %ghost %config(missingok,noreplace) %{_prefix}/lib/locale/locale-archive
+%attr(0644,root,root) %verify(not md5 size mtime mode) %ghost %{_prefix}/lib/locale/locale-archive
 
 %files locale-source
 %dir %{_prefix}/share/i18n/locales
@@ -1953,11 +2203,105 @@ fi
 %files -f compat-libpthread-nonshared.filelist -n compat-libpthread-nonshared
 
 %changelog
-* Tue Dec  10 2019 DevOps <root@localhost> - 2.28-9942.1.0+custom1+1
+* Tue May 05 2020 DevOps <root@localhost> - 2.28-9972_1.1.0+custom1+1
 - port v2.6.32 linux kernel compatibility from glibc 2.24 or 2.25
 
-* Mon Apr  1 2019 Florian Weimer <fweimer@redhat.com> - 2.28-42.1
-- ja_JP: Add new Japanese Era name (#1692450)
+* Thu Nov 28 2019 Florian Weimer <fweimer@redhat.com> - 2.28-72.1
+- s390x: Fix z15 strstr for patterns crossing pages (#1777797)
+
+* Mon Jul 22 2019 Carlos O'Donell <carlos@redhat.com> - 2.28-72
+- Skip wide buffer handling for legacy stdio handles (#1722215)
+
+* Mon Jul 22 2019 Carlos O'Donell <carlos@redhat.com> - 2.28-71
+- Remove copy_file_range emulation (#1724975)
+
+* Mon Jul 22 2019 Carlos O'Donell <carlos@redhat.com> - 2.28-70
+- Avoid nscd assertion failure during persistent db check (#1727152)
+
+* Mon Jul 22 2019 Carlos O'Donell <carlos@redhat.com> - 2.28-69
+- Fix invalid free under valgrind with libdl (#1717438)
+
+* Thu Jul 18 2019 Carlos O'Donell <carlos@redhat.com> - 2.28-68
+- Account for size of locale-archive in rpm package (#1725131)
+
+* Thu Jul 18 2019 Carlos O'Donell <carlos@redhat.com> - 2.28-67
+- Reject IP addresses with trailing characters in getaddrinfo (#1727241)
+
+* Fri Jun 14 2019 Florian Weimer <fweimer@redhat.com> - 2.28-66
+- Avoid header conflict between <sys/stat.h> and <linux/stat.h> (#1699194)
+
+* Wed Jun 12 2019 Florian Weimer <fweimer@redhat.com> - 2.28-65
+- glibc-all-langpacks: Do not delete locale archive during update (#1717347)
+- Do not mark /usr/lib/locale/locale-archive as a configuration file
+  because it is always automatically overwritten by build-locale-archive.
+
+* Mon Jun 10 2019 DJ Delorie <dj@redhat.com> - 2.28-64
+- Avoid ABI exposure of the NSS service_user type (#1710894)
+
+* Thu Jun  6 2019 Patsy Griffin Franklin <patsy@redhat.com> - 2.28-63
+- Enable full ICMP errors for UDP DNS sockets. (#1670043)
+
+* Mon Jun  3 2019 Carlos O'Donell <carlos@redhat.com> - 2.28-62
+- Convert post-install binary to rpm lua scriptlet (#1639346)
+
+* Mon Jun  3 2019 Florian Weimer <fweimer@redhat.com> - 2.28-61
+- Fix crash during wide stream buffer flush (#1710478)
+
+* Fri May 31 2019 Carlos O'Donell <carlos@redhat.com> - 2.28-60
+- Add PF_XDP, AF_XDP and SOL_XDP from Linux 4.18 (#1706777)
+
+* Wed May 22 2019 DJ Delorie <dj@redhat.com> - 2.28-59
+- Add .gdb_index to debug information (#1612448)
+
+* Wed May 22 2019 DJ Delorie <dj@redhat.com) - 2.28-58
+- iconv, localedef: avoid floating point rounding differences (#1691528)
+
+* Wed May 22 2019 Arjun Shankar <arjun@redhat.com> - 2.28-57
+- locale: Add LOCPATH diagnostics to the locale program (#1701605)
+
+* Fri May 17 2019 Patsy Griffin Franklin <patsy@redhat.com> - 2.28-56
+- Fix hang in pldd.  (#1702539)
+
+* Mon May 13 2019 Florian Weimer <fweimer@redhat.com> - 2.28-55
+- s390x string function improvements (#1659438)
+
+* Thu May  2 2019 Patsy Griffin Franklin <patsy@redhat.com> - 2.28-54
+- Fix test suite failures due to race conditions in posix/tst-spawn
+  spawned processes. (#1659512)
+
+* Wed May  1 2019 DJ Delorie <dj@redhat.com> - 2.28-53
+- Add missing CFI data to __mpn_* functions on ppc64le (#1658901)
+
+* Fri Apr 26 2019 Arjun Shankar <arjun@redhat.com> - 2.28-52
+- intl: Do not return NULL on asprintf failure in gettext (#1663035)
+
+* Fri Apr 26 2019 Florian Weimer <fweimer@redhat.com> - 2.28-51
+- Increase BIND_NOW coverage (#1639343)
+
+* Tue Apr 23 2019 Carlos O'Donell <carlos@redhat.com> - 2.28-50
+- Fix pthread_rwlock_trywrlock and pthread_rwlock_tryrdlock stalls (#1659293)
+
+* Tue Apr 23 2019 Arjun Shankar <arjun@redhat.com> - 2.28-49
+- malloc: Improve bad chunk detection (#1651283)
+
+* Mon Apr 22 2019 Patsy Griffin Franklin <patsy@redhat.com> - 2.28-48
+- Add compiler barriers around modifications of the robust mutex list
+  for pthread_mutex_trylock. (#1672773)
+
+* Tue Apr 16 2019 DJ Delorie <dj@redhat.com> - 2.28-47
+- powerpc: Only enable HTM if kernel supports PPC_FEATURE2_HTM_NOSC (#1651742)
+
+* Fri Apr 12 2019 Florian Weimer <fweimer@redhat.com> - 2.28-46
+- Only build libm with -fno-math-errno (#1664408)
+
+* Tue Apr  2 2019 Florian Weimer <fweimer@redhat.com> - 2.28-45
+- ja_JP: Add new Japanese Era name (#1577438)
+
+* Wed Mar  6 2019 Florian Weimer <fweimer@redhat.com> - 2.28-44
+- math: Add XFAILs for some IBM 128-bit long double fma tests (#1623537)
+
+* Fri Mar  1 2019 Florian Weimer <fweimer@redhat.com> - 2.28-43
+- malloc: realloc ncopies integer overflow (#1662843)
 
 * Fri Dec 14 2018 Florian Weimer <fweimer@redhat.com> - 2.28-42
 - Fix rdlock stall with PREFER_WRITER_NONRECURSIVE_NP (#1654872)
