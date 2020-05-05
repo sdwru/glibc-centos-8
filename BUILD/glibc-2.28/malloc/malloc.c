@@ -1384,39 +1384,6 @@ typedef struct malloc_chunk *mbinptr;
 #define first(b)     ((b)->fd)
 #define last(b)      ((b)->bk)
 
-/* Take a chunk off a bin list */
-#define unlink(AV, P, BK, FD) {                                            \
-    if (__builtin_expect (chunksize(P) != prev_size (next_chunk(P)), 0))      \
-      malloc_printerr ("corrupted size vs. prev_size");			      \
-    FD = P->fd;								      \
-    BK = P->bk;								      \
-    if (__builtin_expect (FD->bk != P || BK->fd != P, 0))		      \
-      malloc_printerr ("corrupted double-linked list");			      \
-    else {								      \
-        FD->bk = BK;							      \
-        BK->fd = FD;							      \
-        if (!in_smallbin_range (chunksize_nomask (P))			      \
-            && __builtin_expect (P->fd_nextsize != NULL, 0)) {		      \
-	    if (__builtin_expect (P->fd_nextsize->bk_nextsize != P, 0)	      \
-		|| __builtin_expect (P->bk_nextsize->fd_nextsize != P, 0))    \
-	      malloc_printerr ("corrupted double-linked list (not small)");   \
-            if (FD->fd_nextsize == NULL) {				      \
-                if (P->fd_nextsize == P)				      \
-                  FD->fd_nextsize = FD->bk_nextsize = FD;		      \
-                else {							      \
-                    FD->fd_nextsize = P->fd_nextsize;			      \
-                    FD->bk_nextsize = P->bk_nextsize;			      \
-                    P->fd_nextsize->bk_nextsize = FD;			      \
-                    P->bk_nextsize->fd_nextsize = FD;			      \
-                  }							      \
-              } else {							      \
-                P->fd_nextsize->bk_nextsize = P->bk_nextsize;		      \
-                P->bk_nextsize->fd_nextsize = P->fd_nextsize;		      \
-              }								      \
-          }								      \
-      }									      \
-}
-
 /*
    Indexing
 
@@ -1489,6 +1456,46 @@ typedef struct malloc_chunk *mbinptr;
 #define bin_index(sz) \
   ((in_smallbin_range (sz)) ? smallbin_index (sz) : largebin_index (sz))
 
+/* Take a chunk off a bin list.  */
+static void
+unlink_chunk (mstate av, mchunkptr p)
+{
+  if (chunksize (p) != prev_size (next_chunk (p)))
+    malloc_printerr ("corrupted size vs. prev_size");
+
+  mchunkptr fd = p->fd;
+  mchunkptr bk = p->bk;
+
+  if (__builtin_expect (fd->bk != p || bk->fd != p, 0))
+    malloc_printerr ("corrupted double-linked list");
+
+  fd->bk = bk;
+  bk->fd = fd;
+  if (!in_smallbin_range (chunksize_nomask (p)) && p->fd_nextsize != NULL)
+    {
+      if (p->fd_nextsize->bk_nextsize != p
+	  || p->bk_nextsize->fd_nextsize != p)
+	malloc_printerr ("corrupted double-linked list (not small)");
+
+      if (fd->fd_nextsize == NULL)
+	{
+	  if (p->fd_nextsize == p)
+	    fd->fd_nextsize = fd->bk_nextsize = fd;
+	  else
+	    {
+	      fd->fd_nextsize = p->fd_nextsize;
+	      fd->bk_nextsize = p->bk_nextsize;
+	      p->fd_nextsize->bk_nextsize = fd;
+	      p->bk_nextsize->fd_nextsize = fd;
+	    }
+	}
+      else
+	{
+	  p->fd_nextsize->bk_nextsize = p->bk_nextsize;
+	  p->bk_nextsize->fd_nextsize = p->fd_nextsize;
+	}
+    }
+}
 
 /*
    Unsorted chunks
@@ -2810,6 +2817,7 @@ systrim (size_t pad, mstate av)
 static void
 munmap_chunk (mchunkptr p)
 {
+  size_t pagesize = GLRO (dl_pagesize);
   INTERNAL_SIZE_T size = chunksize (p);
 
   assert (chunk_is_mmapped (p));
@@ -2819,6 +2827,7 @@ munmap_chunk (mchunkptr p)
   if (DUMPED_MAIN_ARENA_CHUNK (p))
     return;
 
+  uintptr_t mem = (uintptr_t) chunk2mem (p);
   uintptr_t block = (uintptr_t) p - prev_size (p);
   size_t total_size = prev_size (p) + size;
   /* Unfortunately we have to do the compilers job by hand here.  Normally
@@ -2826,7 +2835,8 @@ munmap_chunk (mchunkptr p)
      page size.  But gcc does not recognize the optimization possibility
      (in the moment at least) so we combine the two values into one before
      the bit test.  */
-  if (__builtin_expect (((block | total_size) & (GLRO (dl_pagesize) - 1)) != 0, 0))
+  if (__glibc_unlikely ((block | total_size) & (pagesize - 1)) != 0
+      || __glibc_unlikely (!powerof2 (mem & (pagesize - 1))))
     malloc_printerr ("munmap_chunk(): invalid pointer");
 
   atomic_decrement (&mp_.n_mmaps);
@@ -2849,16 +2859,22 @@ mremap_chunk (mchunkptr p, size_t new_size)
   char *cp;
 
   assert (chunk_is_mmapped (p));
-  assert (((size + offset) & (GLRO (dl_pagesize) - 1)) == 0);
+
+  uintptr_t block = (uintptr_t) p - offset;
+  uintptr_t mem = (uintptr_t) chunk2mem(p);
+  size_t total_size = offset + size;
+  if (__glibc_unlikely ((block | total_size) & (pagesize - 1)) != 0
+      || __glibc_unlikely (!powerof2 (mem & (pagesize - 1))))
+    malloc_printerr("mremap_chunk(): invalid pointer");
 
   /* Note the extra SIZE_SZ overhead as in mmap_chunk(). */
   new_size = ALIGN_UP (new_size + offset + SIZE_SZ, pagesize);
 
   /* No need to remap if the number of pages does not change.  */
-  if (size + offset == new_size)
+  if (total_size == new_size)
     return p;
 
-  cp = (char *) __mremap ((char *) p - offset, size + offset, new_size,
+  cp = (char *) __mremap ((char *) block, total_size, new_size,
                           MREMAP_MAYMOVE);
 
   if (cp == MAP_FAILED)
@@ -3724,11 +3740,22 @@ _int_malloc (mstate av, size_t bytes)
       while ((victim = unsorted_chunks (av)->bk) != unsorted_chunks (av))
         {
           bck = victim->bk;
-          if (__builtin_expect (chunksize_nomask (victim) <= 2 * SIZE_SZ, 0)
-              || __builtin_expect (chunksize_nomask (victim)
-				   > av->system_mem, 0))
-            malloc_printerr ("malloc(): memory corruption");
           size = chunksize (victim);
+          mchunkptr next = chunk_at_offset (victim, size);
+
+          if (__glibc_unlikely (size <= 2 * SIZE_SZ)
+              || __glibc_unlikely (size > av->system_mem))
+            malloc_printerr ("malloc(): invalid size (unsorted)");
+          if (__glibc_unlikely (chunksize_nomask (next) < 2 * SIZE_SZ)
+              || __glibc_unlikely (chunksize_nomask (next) > av->system_mem))
+            malloc_printerr ("malloc(): invalid next size (unsorted)");
+          if (__glibc_unlikely ((prev_size (next) & ~(SIZE_BITS)) != size))
+            malloc_printerr ("malloc(): mismatching next->prev_size (unsorted)");
+          if (__glibc_unlikely (bck->fd != victim)
+              || __glibc_unlikely (victim->fd != unsorted_chunks (av)))
+            malloc_printerr ("malloc(): unsorted double linked list corrupted");
+          if (__glibc_unlikely (prev_inuse (next)))
+            malloc_printerr ("malloc(): invalid next->prev_inuse (unsorted)");
 
           /*
              If a small request, try to use last remainder if it is the
@@ -3849,10 +3876,14 @@ _int_malloc (mstate av, size_t bytes)
                         {
                           victim->fd_nextsize = fwd;
                           victim->bk_nextsize = fwd->bk_nextsize;
+                          if (__glibc_unlikely (fwd->bk_nextsize->fd_nextsize != fwd))
+                            malloc_printerr ("malloc(): largebin double linked list corrupted (nextsize)");
                           fwd->bk_nextsize = victim;
                           victim->bk_nextsize->fd_nextsize = victim;
                         }
                       bck = fwd->bk;
+                      if (bck->fd != fwd)
+                        malloc_printerr ("malloc(): largebin double linked list corrupted (bk)");
                     }
                 }
               else
@@ -3917,7 +3948,7 @@ _int_malloc (mstate av, size_t bytes)
                 victim = victim->fd;
 
               remainder_size = size - nb;
-              unlink (av, victim, bck, fwd);
+              unlink_chunk (av, victim);
 
               /* Exhaust */
               if (remainder_size < MINSIZE)
@@ -4019,7 +4050,7 @@ _int_malloc (mstate av, size_t bytes)
               remainder_size = size - nb;
 
               /* unlink */
-              unlink (av, victim, bck, fwd);
+              unlink_chunk (av, victim);
 
               /* Exhaust */
               if (remainder_size < MINSIZE)
@@ -4083,6 +4114,9 @@ _int_malloc (mstate av, size_t bytes)
 
       victim = av->top;
       size = chunksize (victim);
+
+      if (__glibc_unlikely (size > av->system_mem))
+        malloc_printerr ("malloc(): corrupted top size");
 
       if ((unsigned long) (size) >= (unsigned long) (nb + MINSIZE))
         {
@@ -4306,7 +4340,9 @@ _int_free (mstate av, mchunkptr p, int have_lock)
       prevsize = prev_size (p);
       size += prevsize;
       p = chunk_at_offset(p, -((long) prevsize));
-      unlink(av, p, bck, fwd);
+      if (__glibc_unlikely (chunksize(p) != prevsize))
+        malloc_printerr ("corrupted size vs. prev_size while consolidating");
+      unlink_chunk (av, p);
     }
 
     if (nextchunk != av->top) {
@@ -4315,7 +4351,7 @@ _int_free (mstate av, mchunkptr p, int have_lock)
 
       /* consolidate forward */
       if (!nextinuse) {
-	unlink(av, nextchunk, bck, fwd);
+	unlink_chunk (av, nextchunk);
 	size += nextsize;
       } else
 	clear_inuse_bit_at_offset(nextchunk, 0);
@@ -4428,8 +4464,6 @@ static void malloc_consolidate(mstate av)
   INTERNAL_SIZE_T nextsize;
   INTERNAL_SIZE_T prevsize;
   int             nextinuse;
-  mchunkptr       bck;
-  mchunkptr       fwd;
 
   atomic_store_relaxed (&av->have_fastchunks, false);
 
@@ -4467,7 +4501,9 @@ static void malloc_consolidate(mstate av)
 	  prevsize = prev_size (p);
 	  size += prevsize;
 	  p = chunk_at_offset(p, -((long) prevsize));
-	  unlink(av, p, bck, fwd);
+	  if (__glibc_unlikely (chunksize(p) != prevsize))
+	    malloc_printerr ("corrupted size vs. prev_size in fastbins");
+	  unlink_chunk (av, p);
 	}
 
 	if (nextchunk != av->top) {
@@ -4475,7 +4511,7 @@ static void malloc_consolidate(mstate av)
 
 	  if (!nextinuse) {
 	    size += nextsize;
-	    unlink(av, nextchunk, bck, fwd);
+	    unlink_chunk (av, nextchunk);
 	  } else
 	    clear_inuse_bit_at_offset(nextchunk, 0);
 
@@ -4523,14 +4559,6 @@ _int_realloc(mstate av, mchunkptr oldp, INTERNAL_SIZE_T oldsize,
   mchunkptr        remainder;       /* extra space at end of newp */
   unsigned long    remainder_size;  /* its size */
 
-  mchunkptr        bck;             /* misc temp for linking */
-  mchunkptr        fwd;             /* misc temp for linking */
-
-  unsigned long    copysize;        /* bytes to copy */
-  unsigned int     ncopies;         /* INTERNAL_SIZE_T words to copy */
-  INTERNAL_SIZE_T* s;               /* copy source */
-  INTERNAL_SIZE_T* d;               /* copy destination */
-
   /* oldmem size */
   if (__builtin_expect (chunksize_nomask (oldp) <= 2 * SIZE_SZ, 0)
       || __builtin_expect (oldsize >= av->system_mem, 0))
@@ -4575,7 +4603,7 @@ _int_realloc(mstate av, mchunkptr oldp, INTERNAL_SIZE_T oldsize,
                (unsigned long) (nb))
         {
           newp = oldp;
-          unlink (av, next, bck, fwd);
+          unlink_chunk (av, next);
         }
 
       /* allocate, copy, free */
@@ -4598,43 +4626,7 @@ _int_realloc(mstate av, mchunkptr oldp, INTERNAL_SIZE_T oldsize,
             }
           else
             {
-              /*
-                 Unroll copy of <= 36 bytes (72 if 8byte sizes)
-                 We know that contents have an odd number of
-                 INTERNAL_SIZE_T-sized words; minimally 3.
-               */
-
-              copysize = oldsize - SIZE_SZ;
-              s = (INTERNAL_SIZE_T *) (chunk2mem (oldp));
-              d = (INTERNAL_SIZE_T *) (newmem);
-              ncopies = copysize / sizeof (INTERNAL_SIZE_T);
-              assert (ncopies >= 3);
-
-              if (ncopies > 9)
-                memcpy (d, s, copysize);
-
-              else
-                {
-                  *(d + 0) = *(s + 0);
-                  *(d + 1) = *(s + 1);
-                  *(d + 2) = *(s + 2);
-                  if (ncopies > 4)
-                    {
-                      *(d + 3) = *(s + 3);
-                      *(d + 4) = *(s + 4);
-                      if (ncopies > 6)
-                        {
-                          *(d + 5) = *(s + 5);
-                          *(d + 6) = *(s + 6);
-                          if (ncopies > 8)
-                            {
-                              *(d + 7) = *(s + 7);
-                              *(d + 8) = *(s + 8);
-                            }
-                        }
-                    }
-                }
-
+	      memcpy (newmem, chunk2mem (oldp), oldsize - SIZE_SZ);
               _int_free (av, oldp, 1);
               check_inuse_chunk (av, newp);
               return chunk2mem (newp);

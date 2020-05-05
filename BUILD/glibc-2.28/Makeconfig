@@ -398,6 +398,8 @@ endif
 # test modules.
 ifeq ($(bind-now),yes)
 LDFLAGS-lib.so += -Wl,-z,now
+# Extra flags for dynamically linked non-test main programs.
+link-extra-flags += -Wl,-z,now
 endif
 
 # Command to run after every final link (executable or shared object).
@@ -413,7 +415,7 @@ link-extra-libs-tests = $(libsupport)
 
 # Command for linking PIE programs with the C library.
 ifndef +link-pie
-+link-pie-before-libc = $(CC) $(if $($(@F)-no-pie),$(no-pie-ldflag),-pie) \
++link-pie-before-libc = $(if $($(@F)-no-pie),$(no-pie-ldflag),-pie) \
 	     -Wl,-O1 -nostdlib -nostartfiles -o $@ \
 	     $(sysdep-LDFLAGS) $(LDFLAGS) $(LDFLAGS-$(@F)) \
 	     $(combreloc-LDFLAGS) $(relro-LDFLAGS) $(hashstyle-LDFLAGS) \
@@ -426,23 +428,24 @@ ifndef +link-pie
 	     $(link-extra-libs)
 +link-pie-after-libc = $(+postctorS) $(+postinit)
 define +link-pie
-$(+link-pie-before-libc) $(rtld-LDFLAGS) $(link-libc) $(+link-pie-after-libc)
+$(CC) $(link-libc-rpath-link) $(+link-pie-before-libc) $(rtld-LDFLAGS) \
+  $(link-extra-flags) $(link-libc) $(+link-pie-after-libc)
 $(call after-link,$@)
 endef
 define +link-pie-tests
-$(+link-pie-before-libc) $(rtld-tests-LDFLAGS) $(link-libc-tests) \
-			 $(+link-pie-after-libc)
+$(CC) $(+link-pie-before-libc) $(rtld-tests-LDFLAGS) $(link-libc-tests) \
+  $(+link-pie-after-libc)
 $(call after-link,$@)
 endef
 define +link-pie-printers-tests
-$(+link-pie-before-libc) $(built-rtld-LDFLAGS) $(link-libc-printers-tests) \
-			 $(+link-pie-after-libc)
+$(CC) $(+link-pie-before-libc) $(built-rtld-LDFLAGS) \
+  $(link-libc-printers-tests) $(+link-pie-after-libc)
 $(call after-link,$@)
 endef
 endif
 # Command for statically linking programs with the C library.
 ifndef +link-static
-+link-static-before-libc = $(CC) -nostdlib -nostartfiles -static -o $@ \
++link-static-before-libc = -nostdlib -nostartfiles -static -o $@ \
 	      $(if $($(@F)-no-pie),$(no-pie-ldflag),$(default-pie-ldflag)) \
 	      $(sysdep-LDFLAGS) $(LDFLAGS) $(LDFLAGS-$(@F))  \
 	      $(firstword $(CRT-$(@F)) $(csu-objpfx)$(real-static-start-installed-name)) \
@@ -454,11 +457,13 @@ ifndef +link-static
 	      $(link-extra-libs-static)
 +link-static-after-libc = $(+postctorT) $(+postinit)
 define +link-static
-$(+link-static-before-libc) $(link-libc-static) $(+link-static-after-libc)
+$(CC) $(+link-static-before-libc) $(link-extra-flags) $(link-libc-static) \
+  $(+link-static-after-libc)
 $(call after-link,$@)
 endef
 define +link-static-tests
-$(+link-static-before-libc) $(link-libc-static-tests) $(+link-static-after-libc)
+$(CC) $(+link-static-before-libc) $(link-libc-static-tests) \
+  $(+link-static-after-libc)
 $(call after-link,$@)
 endef
 endif
@@ -473,7 +478,7 @@ ifeq (yes,$(build-pie-default))
 +link-tests = $(+link-pie-tests)
 +link-printers-tests = $(+link-pie-printers-tests)
 else  # not build-pie-default
-+link-before-libc = $(CC) -nostdlib -nostartfiles -o $@ \
++link-before-libc = -nostdlib -nostartfiles -o $@ \
 	      $(sysdep-LDFLAGS) $(LDFLAGS) $(LDFLAGS-$(@F)) \
 	      $(combreloc-LDFLAGS) $(relro-LDFLAGS) $(hashstyle-LDFLAGS) \
 	      $(firstword $(CRT-$(@F)) $(csu-objpfx)$(start-installed-name)) \
@@ -485,16 +490,17 @@ else  # not build-pie-default
 	      $(link-extra-libs)
 +link-after-libc = $(+postctor) $(+postinit)
 define +link
-$(+link-before-libc) $(rtld-LDFLAGS) $(link-libc) $(+link-after-libc)
+$(CC) $(link-libc-rpath-link) $(+link-before-libc) $(rtld-LDFLAGS) \
+  $(link-extra-flags) $(link-libc) $(+link-after-libc)
 $(call after-link,$@)
 endef
 define +link-tests
-$(+link-before-libc) $(rtld-tests-LDFLAGS) $(link-libc-tests) \
+$(CC) $(+link-before-libc) $(rtld-tests-LDFLAGS) $(link-libc-tests) \
 		     $(+link-after-libc)
 $(call after-link,$@)
 endef
 define +link-printers-tests
-$(+link-before-libc) $(built-rtld-LDFLAGS) $(link-libc-printers-tests) \
+$(CC) $(+link-before-libc) $(built-rtld-LDFLAGS) $(link-libc-printers-tests) \
 		     $(+link-after-libc)
 $(call after-link,$@)
 endef
@@ -546,6 +552,15 @@ ifeq (yes,$(build-shared))
 link-libc-rpath = -Wl,-rpath=$(rpath-link)
 link-libc-rpath-link = -Wl,-rpath-link=$(rpath-link)
 
+# For programs which are not tests, $(link-libc-rpath-link) is added
+# directly in $(+link), $(+link-pie) above, so that -Wl,-rpath-link
+# comes before the expansion of LDLIBS-* and affects libraries added
+# there.  For shared objects, -Wl,-rpath-link is added via
+# $(build-shlib-helper) and $(build-module-helper) in Makerules (also
+# before the expansion of LDLIBS-* variables).
+
+# Tests use -Wl,-rpath instead of -Wl,-rpath-link for
+# build-hardcoded-path-in-tests.
 ifeq (yes,$(build-hardcoded-path-in-tests))
 link-libc-tests-rpath-link = $(link-libc-rpath)
 else
@@ -556,7 +571,7 @@ link-libc-before-gnulib = $(common-objpfx)libc.so$(libc.so-version) \
 			  $(common-objpfx)$(patsubst %,$(libtype.oS),c) \
 			  $(as-needed) $(elf-objpfx)ld.so \
 			  $(no-as-needed)
-link-libc = $(link-libc-rpath-link) $(link-libc-before-gnulib) $(gnulib)
+link-libc = $(link-libc-before-gnulib) $(gnulib)
 
 link-libc-tests-after-rpath-link = $(link-libc-before-gnulib) $(gnulib-tests)
 link-libc-tests = $(link-libc-tests-rpath-link) \
@@ -831,8 +846,10 @@ endif
 # disable any optimization that assume default rounding mode.
 +math-flags = -frounding-math
 
-# Build libc/libm using -fno-math-errno, but run testsuite with -fmath-errno.
-+extra-math-flags = $(if $(filter libnldbl nonlib testsuite,$(in-module)),-fmath-errno,-fno-math-errno)
+# Logically only "libnldbl", "nonlib" and "testsuite" should be using
+# -fno-math-errno. However due to GCC bug #88576, only "libm" can use
+# -fno-math-errno.
++extra-math-flags = $(if $(filter libm,$(in-module)),-fno-math-errno,-fmath-errno)
 
 # We might want to compile with some stack-protection flag.
 ifneq ($(stack-protector),)

@@ -62,8 +62,17 @@
 /* Define if assembler supports AVX512DQ.  */
 #undef  HAVE_AVX512DQ_ASM_SUPPORT
 
+/* Define if assembler supports z10 zarch instructions as default on S390.  */
+#undef  HAVE_S390_MIN_Z10_ZARCH_ASM_SUPPORT
+
 /* Define if assembler supports z196 zarch instructions as default on S390.  */
 #undef  HAVE_S390_MIN_Z196_ZARCH_ASM_SUPPORT
+
+/* Define if assembler supports z13 zarch instructions as default on S390.  */
+#undef  HAVE_S390_MIN_Z13_ZARCH_ASM_SUPPORT
+
+/* Define if assembler supports arch13 zarch instruction as default on S390.  */
+#undef  HAVE_S390_MIN_ARCH13_ZARCH_ASM_SUPPORT
 
 /* Define if assembler supports vector instructions on S390.  */
 #undef  HAVE_S390_VX_ASM_SUPPORT
@@ -71,6 +80,9 @@
 /* Define if gcc supports vector registers as clobbers in inline assembly
    on S390.  */
 #undef  HAVE_S390_VX_GCC_SUPPORT
+
+/* Define if assembler supports arch13 instructions on S390.  */
+#undef  HAVE_S390_ARCH13_ASM_SUPPORT
 
 /* Define if assembler supports Intel MPX.  */
 #undef  HAVE_MPX_SUPPORT

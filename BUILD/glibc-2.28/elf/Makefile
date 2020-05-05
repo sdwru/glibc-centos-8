@@ -116,14 +116,6 @@ others-extras   = $(ldconfig-modules)
 endif
 endif
 
-# This needs to be statically linked because it is executed at a time
-# when there might be incompatible shared objects on disk, and the
-# purpose of this program is to remove them (among other things).
-others-static += glibc_post_upgrade
-others += glibc_post_upgrade
-glibc_post_upgrade-modules := static-stubs
-CFLAGS-glibc_post_upgrade.c += -DGCONV_MODULES_DIR='"$(gconvdir)"'
-
 # To find xmalloc.c and xstrdup.c
 vpath %.c ../locale/programs
 
@@ -133,6 +125,7 @@ install-others += $(inst_auditdir)/sotruss-lib.so
 install-bin-script += sotruss
 generated += sotruss
 libof-sotruss-lib = extramodules
+LDFLAGS-sotruss-lib.so += $(z-now-$(bind-now))
 $(objpfx)sotruss-lib.so: $(objpfx)sotruss-lib.os
 	$(build-module-asneeded)
 $(objpfx)sotruss-lib.so: $(common-objpfx)libc.so $(objpfx)ld.so \
@@ -200,6 +193,7 @@ tests-internal += loadtest unload unload2 circleload1 \
 	 neededtest neededtest2 neededtest3 neededtest4 \
 	 tst-tls3 tst-tls6 tst-tls7 tst-tls8 tst-dlmopen2 \
 	 tst-ptrguard1 tst-stackguard1 tst-libc_dlvsym
+tests-container += tst-pldd
 ifeq ($(build-hardcoded-path-in-tests),yes)
 tests += tst-dlopen-aout
 tst-dlopen-aout-no-pie = yes
@@ -575,8 +569,6 @@ $(objpfx)sprof: $(libdl)
 $(objpfx)sln: $(sln-modules:%=$(objpfx)%.o)
 
 $(objpfx)ldconfig: $(ldconfig-modules:%=$(objpfx)%.o)
-
-$(objpfx)glibc_post_upgrade: $(glibc_post_upgrade-modules:%=$(objpfx)%.o)
 
 SYSCONF-FLAGS := -D'SYSCONFDIR="$(sysconfdir)"'
 CFLAGS-ldconfig.c += $(SYSCONF-FLAGS) -D'LIBDIR="$(libdir)"' \
